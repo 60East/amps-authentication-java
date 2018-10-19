@@ -21,7 +21,7 @@ public class AMPSKerberosAuthenticatorTest extends TestCase {
 		super(testName);
 
 		Properties props = System.getProperties();
-		props.setProperty("sun.security.krb5.debug","true");
+		// props.setProperty("sun.security.krb5.debug","true");
 		props.setProperty("java.security.krb5.conf", "/home/ryan/projects/ryan/kerberos/krb5-ec2-windows.conf");
 		props.setProperty("java.security.auth.login.config", "src/test/resources/jaas.conf");
 	}

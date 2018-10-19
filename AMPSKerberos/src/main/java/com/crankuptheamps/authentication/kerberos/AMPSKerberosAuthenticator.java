@@ -1,6 +1,7 @@
 package com.crankuptheamps.authentication.kerberos;
 
 import java.io.IOException;
+import java.security.Principal;
 import java.security.PrivilegedActionException;
 import java.util.Base64;
 
@@ -22,15 +23,16 @@ import com.sun.security.auth.callback.TextCallbackHandler;
 public class AMPSKerberosAuthenticator implements Authenticator {
 	private String _spn;
 	private GSSContext _secContext;
+	private LoginContext _loginContext;
 
 	public AMPSKerberosAuthenticator(String spn_, String loginContextName_) throws AuthenticationException {
 		_spn = spn_;
 
 		try {
-			LoginContext ctx = new LoginContext(loginContextName_, new TextCallbackHandler());
-			ctx.login();
+			_loginContext = new LoginContext(loginContextName_, new TextCallbackHandler());
+			_loginContext.login();
 
-			Subject.doAs(ctx.getSubject(), new java.security.PrivilegedExceptionAction<Object>() {
+			Subject.doAs(_loginContext.getSubject(), new java.security.PrivilegedExceptionAction<Object>() {
 				public Object run() throws IOException, AuthenticationException {
 					try {
 						acquireCredentials();
@@ -46,11 +48,11 @@ public class AMPSKerberosAuthenticator implements Authenticator {
 	}
 
 	private void acquireCredentials() throws AuthenticationException {
-		GSSManager manager = GSSManager.getInstance();
-		GSSName clientName;
 		try {
-			//TODO: Where should the user name come from? It should be attainable from the login context
-			clientName = manager.createName("60east", GSSName.NT_USER_NAME);
+			GSSManager manager = GSSManager.getInstance();
+			Subject s = _loginContext.getSubject();
+			Principal p = s.getPrincipals().iterator().next();
+			GSSName clientName = manager.createName(p.getName(), GSSName.NT_USER_NAME);
 			GSSCredential clientCreds = manager.createCredential(clientName, 8 * 3600, (Oid[]) null,
 					GSSCredential.INITIATE_ONLY);
 
