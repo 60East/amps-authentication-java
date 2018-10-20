@@ -5,7 +5,7 @@
   <groupId>com.crankuptheamps</groupId>
   <artifactId>AMPSKerberos</artifactId>
   <packaging>jar</packaging>
-  <version>1.0-SNAPSHOT</version>
+  <version>1.0.0</version>
   <name>AMPSKerberos</name>
   <url>http://maven.apache.org</url>
   <properties>
@@ -34,6 +34,12 @@
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-api</artifactId>
       <version>1.7.25</version>
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-simple</artifactId>
+      <version>1.7.25</version>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>junit</groupId>
