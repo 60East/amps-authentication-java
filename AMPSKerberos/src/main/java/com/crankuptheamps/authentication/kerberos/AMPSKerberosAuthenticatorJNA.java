@@ -1,34 +1,46 @@
 package com.crankuptheamps.authentication.kerberos;
 
+import java.util.Base64;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.crankuptheamps.client.Authenticator;
-import com.crankuptheamps.client.Message;
+import com.crankuptheamps.client.exception.AuthenticationException;
 import com.sun.jna.platform.win32.Sspi;
 import com.sun.jna.platform.win32.Sspi.SecBufferDesc;
 
 import waffle.windows.auth.IWindowsSecurityContext;
-import waffle.windows.auth.impl.WindowsAuthProviderImpl;
 import waffle.windows.auth.impl.WindowsSecurityContextImpl;
 
-import com.crankuptheamps.client.exception.AuthenticationException;
+public class AMPSKerberosAuthenticatorJNA extends AMPSKerberosAuthenticatorBase implements Authenticator {
 
-public class AMPSKerberosAuthenticatorJNA implements Authenticator {
+    private IWindowsSecurityContext _secContext;
+
+    static Logger _logger = LoggerFactory.getLogger(AMPSKerberosAuthenticatorJNA.class);
+
+    public AMPSKerberosAuthenticatorJNA(String spn_) throws AuthenticationException {
+        super(spn_);
+        _secContext = WindowsSecurityContextImpl.getCurrent("Negotiate", spn_);
+        _principalName = _secContext.getPrincipalName();
+    }
 
     @Override
     public String authenticate(String username_, String encodedInToken_) throws AuthenticationException {
-        // TODO Auto-generated method stub
-        return null;
-    }
+        byte[] outToken = null;
 
-    @Override
-    public String retry(String username_, String encodedInToken_) throws AuthenticationException {
-        return authenticate(username_, encodedInToken_);
-    }
-
-    @Override
-    public void completed(String username_, String encodedInToken_, int reason_) throws AuthenticationException {
-        if (reason_ == Message.Reason.AuthDisabled) {
-            return;
+        if (encodedInToken_ == null) {
+            _logger.info("Initializing kerberos security context for user {} connecting to service {}", _principalName,
+                    _spn);
+            outToken = _secContext.getToken();
+        } else {
+            _logger.info("Finalizing kerberos authentication for user {} connecting to service {}", _principalName,
+                    _spn);
+            byte[] inToken = Base64.getDecoder().decode(encodedInToken_);
+            SecBufferDesc inTokenSecBuffer = new SecBufferDesc(Sspi.SECBUFFER_TOKEN, inToken);
+            _secContext.initialize(_secContext.getHandle(), inTokenSecBuffer, _spn);
         }
-        authenticate(username_, encodedInToken_);
+
+        return (outToken == null) ? "" : new String(Base64.getEncoder().encode(outToken));
     }
 }

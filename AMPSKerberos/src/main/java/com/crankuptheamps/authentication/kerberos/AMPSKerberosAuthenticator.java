@@ -15,25 +15,28 @@ import org.ietf.jgss.GSSException;
 import org.ietf.jgss.GSSManager;
 import org.ietf.jgss.GSSName;
 import org.ietf.jgss.Oid;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import com.crankuptheamps.client.Authenticator;
-import com.crankuptheamps.client.Message;
 import com.crankuptheamps.client.exception.AuthenticationException;
 import com.sun.security.auth.callback.TextCallbackHandler;
 
-public class AMPSKerberosAuthenticator implements Authenticator {
-    private String _spn;
+public class AMPSKerberosAuthenticator extends AMPSKerberosAuthenticatorBase {
     private GSSContext _secContext;
-    private LoginContext _loginContext;
+
+    private static Logger _logger = LoggerFactory.getLogger(AMPSKerberosAuthenticator.class);
 
     public AMPSKerberosAuthenticator(String spn_, String loginContextName_) throws AuthenticationException {
-        _spn = spn_;
+        super(spn_);
 
         try {
-            _loginContext = new LoginContext(loginContextName_, new TextCallbackHandler());
-            _loginContext.login();
+            LoginContext loginContext = new LoginContext(loginContextName_, new TextCallbackHandler());
+            loginContext.login();
+            Subject subject = loginContext.getSubject();
+            Principal principal = subject.getPrincipals().iterator().next();
+            _principalName = principal.getName();
 
-            Subject.doAs(_loginContext.getSubject(), new java.security.PrivilegedExceptionAction<Object>() {
+            Subject.doAs(subject, new java.security.PrivilegedExceptionAction<Object>() {
                 public Object run() throws IOException, AuthenticationException {
                     try {
                         acquireCredentials();
@@ -51,9 +54,8 @@ public class AMPSKerberosAuthenticator implements Authenticator {
     private void acquireCredentials() throws AuthenticationException {
         try {
             GSSManager manager = GSSManager.getInstance();
-            Subject s = _loginContext.getSubject();
-            Principal p = s.getPrincipals().iterator().next();
-            GSSName clientName = manager.createName(p.getName(), GSSName.NT_USER_NAME);
+            _logger.info("Acquiring kerberos credentials for user {} connecting to service {}", _principalName, _spn);
+            GSSName clientName = manager.createName(_principalName, GSSName.NT_USER_NAME);
             GSSCredential clientCreds = manager.createCredential(clientName, 8 * 3600, (Oid[]) null,
                     GSSCredential.INITIATE_ONLY);
 
@@ -75,21 +77,17 @@ public class AMPSKerberosAuthenticator implements Authenticator {
 
     @Override
     public String authenticate(String username_, String encodedInToken_) throws AuthenticationException {
-        byte[] inToken = (encodedInToken_ == null) ? new byte[0] : Base64.getDecoder().decode(encodedInToken_);
+        byte[] inToken;
+        if (encodedInToken_ == null) {
+            _logger.info("Initializing kerberos security context for user {} connecting to service {}", _principalName,
+                    _spn);
+            inToken = new byte[0];
+        } else {
+            _logger.info("Finalizing kerberos authentication for user {} connecting to service {}", _principalName,
+                    _spn);
+            inToken = Base64.getDecoder().decode(encodedInToken_);
+        }
         byte[] outToken = initializeSecurityContext(inToken);
         return (outToken == null) ? "" : new String(Base64.getEncoder().encode(outToken));
-    }
-
-    @Override
-    public String retry(String username_, String encodedInToken_) throws AuthenticationException {
-        return authenticate(username_, encodedInToken_);
-    }
-
-    @Override
-    public void completed(String username_, String encodedInToken_, int reason_) throws AuthenticationException {
-        if (reason_ == Message.Reason.AuthDisabled) {
-            return;
-        }
-        authenticate(username_, encodedInToken_);
     }
 }
