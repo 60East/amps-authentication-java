@@ -21,6 +21,7 @@ public class AMPSKerberosAuthenticatorJNA extends AMPSKerberosAuthenticatorBase 
 
     public AMPSKerberosAuthenticatorJNA(String spn_) throws AuthenticationException {
         super(spn_);
+        AMPSKerberosUtils.validateSPNWithRealm(spn_);
         _secContext = WindowsSecurityContextImpl.getCurrent("Negotiate", spn_);
         _principalName = _secContext.getPrincipalName();
     }

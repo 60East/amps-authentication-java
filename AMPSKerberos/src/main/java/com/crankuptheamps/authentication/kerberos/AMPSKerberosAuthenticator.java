@@ -28,6 +28,8 @@ public class AMPSKerberosAuthenticator extends AMPSKerberosAuthenticatorBase {
 
     public AMPSKerberosAuthenticator(String spn_, String loginContextName_) throws AuthenticationException {
         super(spn_);
+        AMPSKerberosUtils.validateSPN(spn_);
+        _spn = _spn.replaceAll("/", "@");
 
         try {
             LoginContext loginContext = new LoginContext(loginContextName_, new TextCallbackHandler());

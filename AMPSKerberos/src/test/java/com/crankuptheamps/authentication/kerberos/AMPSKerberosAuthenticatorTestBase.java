@@ -24,7 +24,7 @@ public abstract class AMPSKerberosAuthenticatorTestBase extends TestCase {
         }
 
         _uri = "tcp://60east@" + ampsHost + ":" + ampsPort + "/amps/json";
-        _spn = "AMPS@" + ampsHost;
+        _spn = "AMPS/" + ampsHost;
     }
 
 }
