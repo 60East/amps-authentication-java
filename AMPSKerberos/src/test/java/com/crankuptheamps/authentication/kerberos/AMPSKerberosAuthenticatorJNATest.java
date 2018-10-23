@@ -20,7 +20,9 @@ public class AMPSKerberosAuthenticatorJNATest extends AMPSKerberosAuthenticatorT
 
     public void testObtainToken() throws AuthenticationException {
         AMPSKerberosAuthenticatorJNA authenticator = new AMPSKerberosAuthenticatorJNA(_spn);
-        assertFalse(authenticator.authenticate(null, null).isEmpty());
+        String token = authenticator.authenticate(null, null);
+        assertFalse(token.isEmpty());
+        assertTrue(token.startsWith("YII"));
     }
 
     public void testPublish() throws AMPSException {

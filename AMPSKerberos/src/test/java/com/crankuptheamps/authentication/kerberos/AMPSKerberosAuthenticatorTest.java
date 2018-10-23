@@ -63,7 +63,9 @@ public class AMPSKerberosAuthenticatorTest extends AMPSKerberosAuthenticatorTest
 
     public void testObtainToken() throws AuthenticationException {
         AMPSKerberosAuthenticator authenticator = new AMPSKerberosAuthenticator(_spn, _loginContextName);
-        assertFalse(authenticator.authenticate(null, null).isEmpty());
+        String token = authenticator.authenticate(null, null);
+        assertFalse(token.isEmpty());
+        assertTrue(token.startsWith("YII"));
     }
 
     public void testPublish() throws AMPSException {
