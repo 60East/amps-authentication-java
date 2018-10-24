@@ -5,12 +5,7 @@ import java.util.Properties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.crankuptheamps.client.Client;
-import com.crankuptheamps.client.exception.AMPSException;
 import com.crankuptheamps.client.exception.AuthenticationException;
-
-import junit.framework.Test;
-import junit.framework.TestSuite;
 
 /**
  * Unit test for AMPSKerberosAuthenticator.
@@ -20,9 +15,7 @@ public class AMPSKerberosGSSAPIAuthenticatorTest extends AMPSKerberosAuthenticat
 
     private static Logger _logger = LoggerFactory.getLogger(AMPSKerberosGSSAPIAuthenticatorTest.class);
 
-    public AMPSKerberosGSSAPIAuthenticatorTest(String testName) {
-        super(testName);
-
+    public AMPSKerberosGSSAPIAuthenticatorTest() throws AuthenticationException {
         // Local authentication test exec via mvn
         // mvn -Djava.security.krb5.conf=/etc/krb5.conf
         // -Djava.security.auth.login.config=src/test/resources/jaas.conf
@@ -55,29 +48,9 @@ public class AMPSKerberosGSSAPIAuthenticatorTest extends AMPSKerberosAuthenticat
             _logger.info("No login context name set via amps.auth.test.login.ctx.name. Login context name set to \""
                     + _loginContextName + "\"");
         }
-    }
 
-    public static Test suite() {
-        return new TestSuite(AMPSKerberosGSSAPIAuthenticatorTest.class);
-    }
+        super.setUp();
 
-    public void testObtainToken() throws AuthenticationException {
-        AMPSKerberosGSSAPIAuthenticator authenticator = new AMPSKerberosGSSAPIAuthenticator(_spn, _loginContextName);
-        String token = authenticator.authenticate(null, null);
-        assertFalse(token.isEmpty());
-        assertTrue(token.startsWith("YII"));
-    }
-
-    public void testPublish() throws AMPSException {
-        Client client = new Client("KerberosTestPublisher");
-        try {
-            client.connect(_uri);
-            AMPSKerberosGSSAPIAuthenticator authenticator = new AMPSKerberosGSSAPIAuthenticator(_spn, _loginContextName);
-            client.logon(10000, authenticator);
-            client.publish("/topic", "{'foo': 'bar'}");
-        } finally {
-            client.close();
-        }
-        assertTrue(true); // An exception would have been thrown if authentication failed
+        _authenticator = new AMPSKerberosGSSAPIAuthenticator(_spn, _loginContextName);
     }
 }

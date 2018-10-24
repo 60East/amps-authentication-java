@@ -1,41 +1,15 @@
 package com.crankuptheamps.authentication.kerberos;
 
-import com.crankuptheamps.client.Client;
-import com.crankuptheamps.client.exception.AMPSException;
+import org.junit.Assume;
+import org.junit.Before;
+
 import com.crankuptheamps.client.exception.AuthenticationException;
 
-import junit.framework.Test;
-import junit.framework.TestSuite;
-
 public class AMPSKerberosSSPIAuthenticatorTest extends AMPSKerberosAuthenticatorTestBase {
-
-    // TODO: Need to skip this test if not on windows
-    public AMPSKerberosSSPIAuthenticatorTest(String testName_) {
-        super(testName_);
-    }
-
-    public static Test suite() {
-        return new TestSuite(AMPSKerberosSSPIAuthenticatorTest.class);
-    }
-
-    public void testObtainToken() throws AuthenticationException {
-        AMPSKerberosSSPIAuthenticator authenticator = new AMPSKerberosSSPIAuthenticator(_spn);
-        String token = authenticator.authenticate(null, null);
-        assertFalse(token.isEmpty());
-        assertTrue(token.startsWith("YII"));
-    }
-
-    public void testPublish() throws AMPSException {
-        Client client = new Client("KerberosTestPublisher");
-        try {
-            client.connect(_uri);
-            AMPSKerberosSSPIAuthenticator authenticator = new AMPSKerberosSSPIAuthenticator(_spn);
-            client.logon(10000, authenticator);
-            client.publish("messages", "{ \"message\" : \"Hello, world!\" } ");
-
-        } finally {
-            client.close();
-        }
-        assertTrue(true); // An exception would have been thrown if authentication failed
+    @Before
+    public void setUp() throws AuthenticationException {
+        Assume.assumeTrue(System.getProperty("os.name").toLowerCase().startsWith("win"));
+        super.setUp();
+        _authenticator = new AMPSKerberosSSPIAuthenticator(_spn);
     }
 }

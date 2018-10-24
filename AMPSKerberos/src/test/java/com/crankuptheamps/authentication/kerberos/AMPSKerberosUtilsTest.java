@@ -1,21 +1,23 @@
 package com.crankuptheamps.authentication.kerberos;
 
+import static org.junit.Assert.*;
+
 import java.util.ArrayList;
 import java.util.List;
 
+import org.junit.Before;
+import org.junit.Test;
+
 import com.crankuptheamps.client.exception.AuthenticationException;
 
-import junit.framework.TestCase;
-
-public class AMPSKerberosUtilsTest extends TestCase {
+public class AMPSKerberosUtilsTest {
 
     List<String> _validSPNs;
     List<String> _validSPNsWithRealm;
     List<String> _invalidSPNs;
 
-    protected void setUp() throws Exception {
-        super.setUp();
-
+    @Before
+    public void setUp() throws Exception {
         _validSPNs = new ArrayList<String>();
         _validSPNs.add("AMPS/localhost");
         _validSPNs.add("AMPS/localhost:1234");
@@ -47,24 +49,28 @@ public class AMPSKerberosUtilsTest extends TestCase {
         _invalidSPNs.add("AMPS@localhost.localdomain/FOO");
     }
 
+    @Test
     public void testValidateSPN() throws AuthenticationException {
         for (String validSPN : _validSPNs) {
             AMPSKerberosUtils.validateSPN(validSPN);
         }
     }
 
+    @Test
     public void testValidateSPNWithRealm1() throws AuthenticationException {
         for (String validSPN : _validSPNs) {
             AMPSKerberosUtils.validateSPN(validSPN);
         }
     }
 
+    @Test
     public void testValidateSPNWithRealm2() throws AuthenticationException {
         for (String validSPN : _validSPNsWithRealm) {
             AMPSKerberosUtils.validateSPNWithRealm(validSPN);
         }
     }
 
+    @Test
     public void testInvalidSPNs1() {
         for (String invalidSPN : _validSPNsWithRealm) {
             boolean exceptionRaised = false;
@@ -77,6 +83,7 @@ public class AMPSKerberosUtilsTest extends TestCase {
         }
     }
 
+    @Test
     public void testInvalidSPNs2() {
         for (String invalidSPN : _invalidSPNs) {
             boolean exceptionRaised = false;
@@ -89,6 +96,7 @@ public class AMPSKerberosUtilsTest extends TestCase {
         }
     }
 
+    @Test
     public void testInvalidSPNs3() {
         for (String invalidSPN : _invalidSPNs) {
             boolean exceptionRaised = false;
