@@ -7,19 +7,19 @@ import com.crankuptheamps.client.exception.AuthenticationException;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
-public class AMPSKerberosAuthenticatorJNATest extends AMPSKerberosAuthenticatorTestBase {
+public class AMPSKerberosSSPIAuthenticatorTest extends AMPSKerberosAuthenticatorTestBase {
 
     // TODO: Need to skip this test if not on windows
-    public AMPSKerberosAuthenticatorJNATest(String testName_) {
+    public AMPSKerberosSSPIAuthenticatorTest(String testName_) {
         super(testName_);
     }
 
     public static Test suite() {
-        return new TestSuite(AMPSKerberosAuthenticatorJNATest.class);
+        return new TestSuite(AMPSKerberosSSPIAuthenticatorTest.class);
     }
 
     public void testObtainToken() throws AuthenticationException {
-        AMPSKerberosAuthenticatorJNA authenticator = new AMPSKerberosAuthenticatorJNA(_spn);
+        AMPSKerberosSSPIAuthenticator authenticator = new AMPSKerberosSSPIAuthenticator(_spn);
         String token = authenticator.authenticate(null, null);
         assertFalse(token.isEmpty());
         assertTrue(token.startsWith("YII"));
@@ -29,7 +29,7 @@ public class AMPSKerberosAuthenticatorJNATest extends AMPSKerberosAuthenticatorT
         Client client = new Client("KerberosTestPublisher");
         try {
             client.connect(_uri);
-            AMPSKerberosAuthenticatorJNA authenticator = new AMPSKerberosAuthenticatorJNA(_spn);
+            AMPSKerberosSSPIAuthenticator authenticator = new AMPSKerberosSSPIAuthenticator(_spn);
             client.logon(10000, authenticator);
             client.publish("messages", "{ \"message\" : \"Hello, world!\" } ");
 

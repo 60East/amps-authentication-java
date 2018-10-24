@@ -15,12 +15,12 @@ import junit.framework.TestSuite;
 /**
  * Unit test for AMPSKerberosAuthenticator.
  */
-public class AMPSKerberosAuthenticatorTest extends AMPSKerberosAuthenticatorTestBase {
+public class AMPSKerberosGSSAPIAuthenticatorTest extends AMPSKerberosAuthenticatorTestBase {
     private String _loginContextName;
 
-    private static Logger _logger = LoggerFactory.getLogger(AMPSKerberosAuthenticatorTest.class);
+    private static Logger _logger = LoggerFactory.getLogger(AMPSKerberosGSSAPIAuthenticatorTest.class);
 
-    public AMPSKerberosAuthenticatorTest(String testName) {
+    public AMPSKerberosGSSAPIAuthenticatorTest(String testName) {
         super(testName);
 
         // Local authentication test exec via mvn
@@ -58,11 +58,11 @@ public class AMPSKerberosAuthenticatorTest extends AMPSKerberosAuthenticatorTest
     }
 
     public static Test suite() {
-        return new TestSuite(AMPSKerberosAuthenticatorTest.class);
+        return new TestSuite(AMPSKerberosGSSAPIAuthenticatorTest.class);
     }
 
     public void testObtainToken() throws AuthenticationException {
-        AMPSKerberosAuthenticator authenticator = new AMPSKerberosAuthenticator(_spn, _loginContextName);
+        AMPSKerberosGSSAPIAuthenticator authenticator = new AMPSKerberosGSSAPIAuthenticator(_spn, _loginContextName);
         String token = authenticator.authenticate(null, null);
         assertFalse(token.isEmpty());
         assertTrue(token.startsWith("YII"));
@@ -72,7 +72,7 @@ public class AMPSKerberosAuthenticatorTest extends AMPSKerberosAuthenticatorTest
         Client client = new Client("KerberosTestPublisher");
         try {
             client.connect(_uri);
-            AMPSKerberosAuthenticator authenticator = new AMPSKerberosAuthenticator(_spn, _loginContextName);
+            AMPSKerberosGSSAPIAuthenticator authenticator = new AMPSKerberosGSSAPIAuthenticator(_spn, _loginContextName);
             client.logon(10000, authenticator);
             client.publish("/topic", "{'foo': 'bar'}");
         } finally {

@@ -13,13 +13,13 @@ import com.sun.jna.platform.win32.Sspi.SecBufferDesc;
 import waffle.windows.auth.IWindowsSecurityContext;
 import waffle.windows.auth.impl.WindowsSecurityContextImpl;
 
-public class AMPSKerberosAuthenticatorJNA extends AMPSKerberosAuthenticatorBase implements Authenticator {
+public class AMPSKerberosSSPIAuthenticator extends AMPSKerberosAuthenticatorBase implements Authenticator {
 
     private IWindowsSecurityContext _secContext;
 
-    static Logger _logger = LoggerFactory.getLogger(AMPSKerberosAuthenticatorJNA.class);
+    static Logger _logger = LoggerFactory.getLogger(AMPSKerberosSSPIAuthenticator.class);
 
-    public AMPSKerberosAuthenticatorJNA(String spn_) throws AuthenticationException {
+    public AMPSKerberosSSPIAuthenticator(String spn_) throws AuthenticationException {
         super(spn_);
         AMPSKerberosUtils.validateSPNWithRealm(spn_);
         _secContext = WindowsSecurityContextImpl.getCurrent("Negotiate", spn_);

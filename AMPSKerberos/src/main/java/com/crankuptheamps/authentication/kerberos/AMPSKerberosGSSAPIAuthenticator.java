@@ -21,12 +21,12 @@ import org.slf4j.LoggerFactory;
 import com.crankuptheamps.client.exception.AuthenticationException;
 import com.sun.security.auth.callback.TextCallbackHandler;
 
-public class AMPSKerberosAuthenticator extends AMPSKerberosAuthenticatorBase {
+public class AMPSKerberosGSSAPIAuthenticator extends AMPSKerberosAuthenticatorBase {
     private GSSContext _secContext;
 
-    private static Logger _logger = LoggerFactory.getLogger(AMPSKerberosAuthenticator.class);
+    private static Logger _logger = LoggerFactory.getLogger(AMPSKerberosGSSAPIAuthenticator.class);
 
-    public AMPSKerberosAuthenticator(String spn_, String loginContextName_) throws AuthenticationException {
+    public AMPSKerberosGSSAPIAuthenticator(String spn_, String loginContextName_) throws AuthenticationException {
         super(spn_);
         AMPSKerberosUtils.validateSPN(spn_);
         _spn = _spn.replaceAll("/", "@");

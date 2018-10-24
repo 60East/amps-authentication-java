@@ -12,7 +12,7 @@ public abstract class AMPSKerberosAuthenticatorBase implements Authenticator {
     protected String _spn;
     protected String _principalName;
 
-    protected static Logger _logger = LoggerFactory.getLogger(AMPSKerberosAuthenticator.class);
+    protected static Logger _logger = LoggerFactory.getLogger(AMPSKerberosGSSAPIAuthenticator.class);
 
     public AMPSKerberosAuthenticatorBase(String spn_) {
         super();
