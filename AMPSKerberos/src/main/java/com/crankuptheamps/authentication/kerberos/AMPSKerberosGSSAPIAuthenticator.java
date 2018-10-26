@@ -94,10 +94,10 @@ public class AMPSKerberosGSSAPIAuthenticator extends AMPSKerberosAuthenticatorBa
         } else {
             _logger.info("Finalizing kerberos authentication for user {} connecting to service {}", _principalName,
                     _spn);
-            inToken = DatatypeConverter.parseBase64Binary(encodedInToken_);
+            inToken = _base64.decode(encodedInToken_);
         }
         byte[] outToken = initializeSecurityContext(inToken);
-        return (outToken == null) ? "" : DatatypeConverter.printBase64Binary(outToken);
+        return (outToken == null) ? "" : new String(_base64.encode(outToken));
     }
 
     @Override

@@ -37,12 +37,12 @@ public class AMPSKerberosSSPIAuthenticator extends AMPSKerberosAuthenticatorBase
         } else {
             _logger.info("Finalizing kerberos authentication for user {} connecting to service {}", _principalName,
                     _spn);
-            byte[] inToken = Base64.getDecoder().decode(encodedInToken_);
+            byte[] inToken = _base64.decode(encodedInToken_);
             SecBufferDesc inTokenSecBuffer = new SecBufferDesc(Sspi.SECBUFFER_TOKEN, inToken);
             _secContext.initialize(_secContext.getHandle(), inTokenSecBuffer, _spn);
         }
 
-        return (outToken == null) ? "" : new String(Base64.getEncoder().encode(outToken));
+        return (outToken == null) ? "" : new String(_base64.encode(outToken));
     }
 
     @Override
