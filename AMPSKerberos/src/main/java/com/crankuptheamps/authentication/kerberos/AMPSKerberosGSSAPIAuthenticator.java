@@ -3,11 +3,11 @@ package com.crankuptheamps.authentication.kerberos;
 import java.io.IOException;
 import java.security.Principal;
 import java.security.PrivilegedActionException;
-import java.util.Base64;
 
 import javax.security.auth.Subject;
 import javax.security.auth.login.LoginContext;
 import javax.security.auth.login.LoginException;
+import javax.xml.bind.DatatypeConverter;
 
 import org.ietf.jgss.GSSContext;
 import org.ietf.jgss.GSSCredential;
@@ -23,13 +23,16 @@ import com.sun.security.auth.callback.TextCallbackHandler;
 
 public class AMPSKerberosGSSAPIAuthenticator extends AMPSKerberosAuthenticatorBase {
     private GSSContext _secContext;
+    private int _lifetime;
 
-    private static Logger _logger = LoggerFactory.getLogger(AMPSKerberosGSSAPIAuthenticator.class);
+    private static final Logger _logger = LoggerFactory.getLogger(AMPSKerberosGSSAPIAuthenticator.class);
 
-    public AMPSKerberosGSSAPIAuthenticator(String spn_, String loginContextName_) throws AuthenticationException {
+    public AMPSKerberosGSSAPIAuthenticator(String spn_, String loginContextName_, int lifetime_)
+            throws AuthenticationException {
         super(spn_);
         AMPSKerberosUtils.validateSPN(spn_);
         _spn = _spn.replaceAll("/", "@");
+        _lifetime = lifetime_;
 
         try {
             LoginContext loginContext = new LoginContext(loginContextName_, new TextCallbackHandler());
@@ -53,12 +56,16 @@ public class AMPSKerberosGSSAPIAuthenticator extends AMPSKerberosAuthenticatorBa
         }
     }
 
+    public AMPSKerberosGSSAPIAuthenticator(String spn_, String loginContextName_) throws AuthenticationException {
+        this(spn_, loginContextName_, 8 * 3600);
+    }
+
     private void acquireCredentials() throws AuthenticationException {
         try {
             GSSManager manager = GSSManager.getInstance();
             _logger.info("Acquiring kerberos credentials for user {} connecting to service {}", _principalName, _spn);
             GSSName clientName = manager.createName(_principalName, GSSName.NT_USER_NAME);
-            GSSCredential clientCreds = manager.createCredential(clientName, 8 * 3600, (Oid[]) null,
+            GSSCredential clientCreds = manager.createCredential(clientName, _lifetime, (Oid[]) null,
                     GSSCredential.INITIATE_ONLY);
 
             GSSName peerName = manager.createName(_spn, GSSName.NT_HOSTBASED_SERVICE);
@@ -87,9 +94,20 @@ public class AMPSKerberosGSSAPIAuthenticator extends AMPSKerberosAuthenticatorBa
         } else {
             _logger.info("Finalizing kerberos authentication for user {} connecting to service {}", _principalName,
                     _spn);
-            inToken = Base64.getDecoder().decode(encodedInToken_);
+            inToken = DatatypeConverter.parseBase64Binary(encodedInToken_);
         }
         byte[] outToken = initializeSecurityContext(inToken);
-        return (outToken == null) ? "" : new String(Base64.getEncoder().encode(outToken));
+        return (outToken == null) ? "" : DatatypeConverter.printBase64Binary(outToken);
+    }
+
+    @Override
+    public void dispose() throws AuthenticationException {
+        if (_secContext != null) {
+            try {
+                _secContext.dispose();
+            } catch (GSSException e) {
+                throw new AuthenticationException(e);
+            }
+        }
     }
 }

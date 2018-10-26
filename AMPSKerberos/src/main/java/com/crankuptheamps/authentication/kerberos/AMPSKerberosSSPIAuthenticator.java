@@ -17,7 +17,7 @@ public class AMPSKerberosSSPIAuthenticator extends AMPSKerberosAuthenticatorBase
 
     private IWindowsSecurityContext _secContext;
 
-    static Logger _logger = LoggerFactory.getLogger(AMPSKerberosSSPIAuthenticator.class);
+    private static final Logger _logger = LoggerFactory.getLogger(AMPSKerberosSSPIAuthenticator.class);
 
     public AMPSKerberosSSPIAuthenticator(String spn_) throws AuthenticationException {
         super(spn_);
@@ -43,5 +43,12 @@ public class AMPSKerberosSSPIAuthenticator extends AMPSKerberosAuthenticatorBase
         }
 
         return (outToken == null) ? "" : new String(Base64.getEncoder().encode(outToken));
+    }
+
+    @Override
+    public void dispose() throws AuthenticationException {
+        if (_secContext != null) {
+            _secContext.dispose();
+        }
     }
 }

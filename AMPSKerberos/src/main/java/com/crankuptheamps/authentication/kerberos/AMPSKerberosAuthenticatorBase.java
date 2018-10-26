@@ -12,12 +12,14 @@ public abstract class AMPSKerberosAuthenticatorBase implements Authenticator {
     protected String _spn;
     protected String _principalName;
 
-    protected static Logger _logger = LoggerFactory.getLogger(AMPSKerberosGSSAPIAuthenticator.class);
+    private static final Logger _logger = LoggerFactory.getLogger(AMPSKerberosGSSAPIAuthenticator.class);
 
     public AMPSKerberosAuthenticatorBase(String spn_) {
         super();
         _spn = spn_;
     }
+
+    public abstract void dispose() throws AuthenticationException;
 
     @Override
     public String retry(String username_, String encodedInToken_) throws AuthenticationException {
@@ -28,9 +30,10 @@ public abstract class AMPSKerberosAuthenticatorBase implements Authenticator {
     public void completed(String username_, String encodedInToken_, int reason_) throws AuthenticationException {
         if (reason_ == Message.Reason.AuthDisabled) {
             _logger.info("Authentication is disabled on the server side");
+            dispose();
             return;
         }
         authenticate(username_, encodedInToken_);
+        dispose();
     }
-
 }

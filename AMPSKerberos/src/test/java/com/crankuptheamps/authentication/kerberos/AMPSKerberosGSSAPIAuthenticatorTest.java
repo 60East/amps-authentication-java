@@ -13,7 +13,7 @@ import com.crankuptheamps.client.exception.AuthenticationException;
 public class AMPSKerberosGSSAPIAuthenticatorTest extends AMPSKerberosAuthenticatorTestBase {
     private String _loginContextName;
 
-    private static Logger _logger = LoggerFactory.getLogger(AMPSKerberosGSSAPIAuthenticatorTest.class);
+    private static final Logger _logger = LoggerFactory.getLogger(AMPSKerberosGSSAPIAuthenticatorTest.class);
 
     public AMPSKerberosGSSAPIAuthenticatorTest() throws AuthenticationException {
         // Local authentication test exec via mvn
@@ -23,14 +23,6 @@ public class AMPSKerberosGSSAPIAuthenticatorTest extends AMPSKerberosAuthenticat
         // -Damps.auth.test.amps.port=8554
         // -Damps.auth.test.login.ctx.name=TestClientLocalKDC
         // test
-
-        // mvn clean test -Dtest=your.package.TestClassName
-        // mvn clean test -Dtest=your.package.TestClassName#particularMethod
-        // to have errors got to console...
-        // mvn clean test -Dtest=your.package.TestClassName -Dsurefire.useFile=false
-
-        // String spn = "AMPS@ip-172-31-5-55.us-west-2.compute.internal";
-        // String loginContextName = "TestClientWindowsKDC";
 
         Properties props = System.getProperties();
 
