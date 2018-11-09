@@ -15,6 +15,7 @@ import com.crankuptheamps.client.exception.AuthenticationException;
 public abstract class AMPSKerberosAuthenticatorTestBase {
     protected String _uri;
     protected String _spn;
+    protected String _authPlatform;
     protected Authenticator _authenticator;
 
     @Before
@@ -29,6 +30,15 @@ public abstract class AMPSKerberosAuthenticatorTestBase {
         String ampsPort = props.getProperty("amps.auth.test.amps.port");
         if (ampsPort == null) {
             throw new RuntimeException("amps.auth.test.amps.port must be set");
+        }
+
+        _authPlatform = props.getProperty("amps.auth.test.auth.platform");
+        if (_authPlatform == null) {
+            throw new RuntimeException("amps.auth.test.auth.platform must be set");
+        }
+
+        if ((_authPlatform != "linux") && (_authPlatform != "windows")) {
+            throw new RuntimeException("amps.auth.test.auth.platform must be 'linux' or 'windows'");
         }
 
         _uri = "tcp://60east@" + ampsHost + ":" + ampsPort + "/amps/json";
