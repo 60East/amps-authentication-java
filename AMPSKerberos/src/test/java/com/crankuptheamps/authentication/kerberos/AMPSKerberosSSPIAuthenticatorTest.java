@@ -13,7 +13,7 @@ public class AMPSKerberosSSPIAuthenticatorTest extends AMPSKerberosAuthenticator
         Properties props = System.getProperties();
         // SSPI won't work when running on linux and also won't work, in our set up, with a linux KDC.
         Assume.assumeTrue(props.getProperty("os.name").toLowerCase().startsWith("win"));
-        Assume.assumeTrue(_authPlatform == "windows");
+        Assume.assumeTrue(_authPlatform.equals("windows"));
         
         super.setUp();
         _authenticator = new AMPSKerberosSSPIAuthenticator(_spn);

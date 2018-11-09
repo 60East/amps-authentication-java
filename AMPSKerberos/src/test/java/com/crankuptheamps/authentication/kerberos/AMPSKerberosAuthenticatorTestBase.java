@@ -37,7 +37,7 @@ public abstract class AMPSKerberosAuthenticatorTestBase {
             throw new RuntimeException("amps.auth.test.auth.platform must be set");
         }
 
-        if ((_authPlatform != "linux") && (_authPlatform != "windows")) {
+        if ((!_authPlatform.equals("linux")) && (!_authPlatform.equals("windows"))) {
             throw new RuntimeException("amps.auth.test.auth.platform must be 'linux' or 'windows'");
         }
 
