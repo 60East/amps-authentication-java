@@ -16,6 +16,7 @@ public class AMPSKerberosGSSAPIAuthenticatorTest extends AMPSKerberosAuthenticat
     private static final Logger _logger = LoggerFactory.getLogger(AMPSKerberosGSSAPIAuthenticatorTest.class);
 
     public AMPSKerberosGSSAPIAuthenticatorTest() throws AuthenticationException {
+        super.setUp();
         // Local authentication test exec via mvn
         // mvn -Djava.security.krb5.conf=/etc/krb5.conf
         // -Djava.security.auth.login.config=src/test/resources/jaas.conf
@@ -40,8 +41,6 @@ public class AMPSKerberosGSSAPIAuthenticatorTest extends AMPSKerberosAuthenticat
             _logger.info("No login context name set via amps.auth.test.login.ctx.name. Login context name set to \""
                     + _loginContextName + "\"");
         }
-
-        super.setUp();
 
         _authenticator = new AMPSKerberosGSSAPIAuthenticator(_spn, _loginContextName);
     }
