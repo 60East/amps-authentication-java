@@ -4,8 +4,11 @@ import static org.junit.Assert.*;
 
 import java.util.Properties;
 
+import org.junit.Assume;
 import org.junit.Before;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.crankuptheamps.client.Authenticator;
 import com.crankuptheamps.client.Client;
@@ -18,14 +21,18 @@ public abstract class AMPSKerberosAuthenticatorTestBase {
     protected String _authPlatform;
     protected Authenticator _authenticator;
 
+    private static final Logger _logger = LoggerFactory.getLogger(AMPSKerberosAuthenticatorTestBase.class);
+
     @Before
     public void setUp() throws AuthenticationException {
         Properties props = System.getProperties();
 
         String ampsHost = props.getProperty("amps.auth.test.amps.host");
+
         if (ampsHost == null) {
-            throw new RuntimeException("amps.auth.test.amps.host must be set");
+            _logger.warn("Kerberos tests will be skipped. Set amps.auth.test.amps.host in order to enable the tests.");
         }
+        Assume.assumeTrue(ampsHost != null);
 
         String ampsPort = props.getProperty("amps.auth.test.amps.port");
         if (ampsPort == null) {

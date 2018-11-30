@@ -2,6 +2,8 @@ package com.crankuptheamps.authentication.kerberos;
 
 import java.util.Properties;
 
+import org.junit.Assume;
+import org.junit.Before;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -16,6 +18,11 @@ public class AMPSKerberosGSSAPIAuthenticatorTest extends AMPSKerberosAuthenticat
     private static final Logger _logger = LoggerFactory.getLogger(AMPSKerberosGSSAPIAuthenticatorTest.class);
 
     public AMPSKerberosGSSAPIAuthenticatorTest() throws AuthenticationException {
+        super();
+    }
+
+    @Before
+    public void setUp() throws AuthenticationException {
         super.setUp();
         // Local authentication test exec via mvn
         // mvn -Djava.security.krb5.conf=/etc/krb5.conf

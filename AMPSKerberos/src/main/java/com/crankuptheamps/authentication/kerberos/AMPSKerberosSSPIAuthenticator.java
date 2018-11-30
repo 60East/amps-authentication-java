@@ -1,7 +1,5 @@
 package com.crankuptheamps.authentication.kerberos;
 
-import java.util.Base64;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

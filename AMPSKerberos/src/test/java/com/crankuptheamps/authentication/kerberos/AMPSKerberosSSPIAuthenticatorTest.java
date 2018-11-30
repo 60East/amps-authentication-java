@@ -8,11 +8,17 @@ import org.junit.Before;
 import com.crankuptheamps.client.exception.AuthenticationException;
 
 public class AMPSKerberosSSPIAuthenticatorTest extends AMPSKerberosAuthenticatorTestBase {
+
+    public AMPSKerberosSSPIAuthenticatorTest() throws AuthenticationException {
+        super();
+    }
+
     @Before
     public void setUp() throws AuthenticationException {
         super.setUp();
         Properties props = System.getProperties();
-        // SSPI won't work when running on linux and also won't work, in our set up, with a linux KDC.
+        // SSPI won't work when running on linux and also won't work, in our set up,
+        // with a linux KDC.
         Assume.assumeTrue(props.getProperty("os.name").toLowerCase().startsWith("win"));
         Assume.assumeTrue(_authPlatform.equals("windows"));
 
