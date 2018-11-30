@@ -30,7 +30,7 @@ public abstract class AMPSKerberosAuthenticatorTestBase {
         String ampsHost = props.getProperty("amps.auth.test.amps.host");
 
         if (ampsHost == null) {
-            _logger.warn("Kerberos tests will be skipped. Set amps.auth.test.amps.host in order to enable the tests.");
+            _logger.warn("Kerberos tests are being skipped. Set the amps.auth.test.amps.host property to enable them.");
         }
         Assume.assumeTrue(ampsHost != null);
 
