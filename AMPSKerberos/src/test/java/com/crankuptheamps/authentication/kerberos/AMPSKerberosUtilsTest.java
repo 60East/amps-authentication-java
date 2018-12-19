@@ -59,7 +59,7 @@ public class AMPSKerberosUtilsTest {
     @Test
     public void testValidateSPNWithRealm1() throws AuthenticationException {
         for (String validSPN : _validSPNs) {
-            AMPSKerberosUtils.validateSPN(validSPN);
+            AMPSKerberosUtils.validateSPNWithRealm(validSPN);
         }
     }
 
