@@ -33,12 +33,13 @@ public abstract class AMPSKerberosAuthenticatorBase implements Authenticator {
     public void completed(String username_, String encodedInToken_, int reason_) throws AuthenticationException {
         if (reason_ == Message.Reason.AuthDisabled) {
             _logger.info("Authentication is disabled on the server side");
-            //TODO: Comment as to why we are disposing
+            // Calling dispose to destroy the security context and any cache credentials
             dispose();
             return;
         }
         authenticate(username_, encodedInToken_);
-        //TODO: Comment as to why we are disposing
+        // Calling dispose to destroy the security context and any cache credentials
         dispose();
     }
 }
+
