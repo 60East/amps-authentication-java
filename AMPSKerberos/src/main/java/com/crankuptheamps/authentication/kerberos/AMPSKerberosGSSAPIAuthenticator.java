@@ -23,6 +23,7 @@ import com.sun.security.auth.callback.TextCallbackHandler;
 public class AMPSKerberosGSSAPIAuthenticator extends AMPSKerberosAuthenticatorBase {
     private GSSContext _secContext;
     private int _lifetime;
+    private String _loginContextName;
 
     private static final Logger _logger = LoggerFactory.getLogger(AMPSKerberosGSSAPIAuthenticator.class);
 
@@ -31,10 +32,18 @@ public class AMPSKerberosGSSAPIAuthenticator extends AMPSKerberosAuthenticatorBa
         super(spn_);
         AMPSKerberosUtils.validateSPN(spn_);
         _spn = _spn.replaceAll("/", "@");
+        _loginContextName = loginContextName_;
         _lifetime = lifetime_;
+        init();
+    }
 
+    public AMPSKerberosGSSAPIAuthenticator(String spn_, String loginContextName_) throws AuthenticationException {
+        this(spn_, loginContextName_, 8 * 3600);
+    }
+    
+    private void init() throws AuthenticationException {
         try {
-            LoginContext loginContext = new LoginContext(loginContextName_, new TextCallbackHandler());
+            LoginContext loginContext = new LoginContext(_loginContextName, new TextCallbackHandler());
             loginContext.login();
             Subject subject = loginContext.getSubject();
             Principal principal = subject.getPrincipals().iterator().next();
@@ -53,10 +62,6 @@ public class AMPSKerberosGSSAPIAuthenticator extends AMPSKerberosAuthenticatorBa
         } catch (LoginException | PrivilegedActionException e) {
             throw new AuthenticationException(e);
         }
-    }
-
-    public AMPSKerberosGSSAPIAuthenticator(String spn_, String loginContextName_) throws AuthenticationException {
-        this(spn_, loginContextName_, 8 * 3600);
     }
 
     private void acquireCredentials() throws AuthenticationException {
@@ -85,6 +90,9 @@ public class AMPSKerberosGSSAPIAuthenticator extends AMPSKerberosAuthenticatorBa
 
     @Override
     public String authenticate(String username_, String encodedInToken_) throws AuthenticationException {
+        if (_secContext == null) {
+            init();
+        }
         byte[] inToken;
         if (encodedInToken_ == null) {
             _logger.info("Initializing kerberos security context for user {} connecting to service {}", _principalName,
@@ -104,6 +112,7 @@ public class AMPSKerberosGSSAPIAuthenticator extends AMPSKerberosAuthenticatorBa
         if (_secContext != null) {
             try {
                 _secContext.dispose();
+                _secContext = null;
             } catch (GSSException e) {
                 throw new AuthenticationException(e);
             }

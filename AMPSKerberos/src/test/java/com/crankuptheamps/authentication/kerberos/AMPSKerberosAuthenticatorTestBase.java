@@ -72,4 +72,21 @@ public abstract class AMPSKerberosAuthenticatorTestBase {
         }
         assertTrue(true); // An exception would have been thrown if authentication failed
     }
+    
+    @Test
+    public void testAuthTwice() throws AMPSException {
+        Client client = new Client("KerberosTestPublisher");
+        try {
+            client.connect(_uri);
+            client.logon(10000, _authenticator);
+            client.close();
+            client.connect(_uri);
+            client.logon(10000, _authenticator);
+            client.publish("/topic", "{'foo': 'bar'}");
+
+        } finally {
+            client.close();
+        }
+        assertTrue(true); // An exception would have been thrown if authentication failed
+    }
 }

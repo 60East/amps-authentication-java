@@ -20,12 +20,19 @@ public class AMPSKerberosSSPIAuthenticator extends AMPSKerberosAuthenticatorBase
     public AMPSKerberosSSPIAuthenticator(String spn_) throws AuthenticationException {
         super(spn_);
         AMPSKerberosUtils.validateSPNWithRealm(spn_);
-        _secContext = WindowsSecurityContextImpl.getCurrent("Negotiate", spn_);
+        init();
+    }
+
+    private void init() throws AuthenticationException {
+        _secContext = WindowsSecurityContextImpl.getCurrent("Negotiate", _spn);
         _principalName = _secContext.getPrincipalName();
     }
 
     @Override
     public String authenticate(String username_, String encodedInToken_) throws AuthenticationException {
+        if (_secContext == null) {
+            init();
+        }
         byte[] outToken = null;
 
         if (encodedInToken_ == null) {
@@ -47,6 +54,7 @@ public class AMPSKerberosSSPIAuthenticator extends AMPSKerberosAuthenticatorBase
     public void dispose() throws AuthenticationException {
         if (_secContext != null) {
             _secContext.dispose();
+            _secContext = null;
         }
     }
 }
