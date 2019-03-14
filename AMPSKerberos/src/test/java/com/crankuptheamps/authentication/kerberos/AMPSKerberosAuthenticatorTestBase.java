@@ -2,6 +2,7 @@ package com.crankuptheamps.authentication.kerberos;
 
 import static org.junit.Assert.*;
 
+import java.util.Enumeration;
 import java.util.Properties;
 
 import org.junit.Assume;
@@ -27,7 +28,13 @@ public abstract class AMPSKerberosAuthenticatorTestBase {
     public void setUp() throws AuthenticationException {
         Properties props = System.getProperties();
 
-        props.forEach((k, v) -> System.out.println(k + ":" + v));
+        Enumeration keys = props.keys();
+        while (keys.hasMoreElements()) {
+            String key = (String)keys.nextElement();
+            String value = (String)props.get(key);
+            System.out.println(key + ": " + value);
+        }
+
 
         String ampsHost = props.getProperty("amps.auth.test.amps.host");
 
