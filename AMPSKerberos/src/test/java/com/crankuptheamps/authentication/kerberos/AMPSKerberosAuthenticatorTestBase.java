@@ -27,6 +27,8 @@ public abstract class AMPSKerberosAuthenticatorTestBase {
     public void setUp() throws AuthenticationException {
         Properties props = System.getProperties();
 
+        props.forEach((k, v) -> System.out.println(k + ":" + v));
+
         String ampsHost = props.getProperty("amps.auth.test.amps.host");
 
         if (ampsHost == null) {
