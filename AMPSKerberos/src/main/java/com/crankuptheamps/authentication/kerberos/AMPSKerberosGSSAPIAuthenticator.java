@@ -34,14 +34,13 @@ public class AMPSKerberosGSSAPIAuthenticator extends AMPSKerberosAuthenticatorBa
         _spn = _spn.replaceAll("/", "@");
         _loginContextName = loginContextName_;
         _lifetime = lifetime_;
-        init();
     }
 
     public AMPSKerberosGSSAPIAuthenticator(String spn_, String loginContextName_) throws AuthenticationException {
         this(spn_, loginContextName_, 8 * 3600);
     }
-    
-    private void init() throws AuthenticationException {
+
+    protected void init() throws AuthenticationException {
         try {
             LoginContext loginContext = new LoginContext(_loginContextName, new TextCallbackHandler());
             loginContext.login();
@@ -89,10 +88,7 @@ public class AMPSKerberosGSSAPIAuthenticator extends AMPSKerberosAuthenticatorBa
     }
 
     @Override
-    public String authenticate(String username_, String encodedInToken_) throws AuthenticationException {
-        if (_secContext == null) {
-            init();
-        }
+    public String _authenticateImpl(String username_, String encodedInToken_) throws AuthenticationException {
         byte[] inToken;
         if (encodedInToken_ == null) {
             _logger.info("Initializing kerberos security context for user {} connecting to service {}", _principalName,

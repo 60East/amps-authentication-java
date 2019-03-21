@@ -1,6 +1,7 @@
 package com.crankuptheamps.authentication.kerberos;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import java.util.Properties;
 
@@ -72,21 +73,46 @@ public abstract class AMPSKerberosAuthenticatorTestBase {
         }
         assertTrue(true); // An exception would have been thrown if authentication failed
     }
-    
+
     @Test
-    public void testAuthTwice() throws AMPSException {
+    public void testMultipleAuth() throws AMPSException {
         Client client = new Client("KerberosTestPublisher");
         try {
-            client.connect(_uri);
-            client.logon(10000, _authenticator);
-            client.close();
-            client.connect(_uri);
-            client.logon(10000, _authenticator);
-            client.publish("/topic", "{'foo': 'bar'}");
-
+            for (int i = 0; i < 10; ++i) {
+                client.connect(_uri);
+                client.logon(10000, _authenticator);
+                client.close();
+            }
         } finally {
             client.close();
         }
         assertTrue(true); // An exception would have been thrown if authentication failed
+    }
+
+    @Test
+    public void testMultipleAuthWithFailure() throws AMPSException {
+        Client client = new Client("KerberosTestPublisher");
+        boolean errorThrown = false;
+        try {
+            for (int i = 0; i < 10; ++i) {
+                if (i % 2 == 0) {
+                    client.connect(_uri);
+                    client.logon(10000, _authenticator);
+                    client.close();
+                } else {
+                    try {
+                        client.connect(_uri);
+                        client.logon();
+                    } catch (AuthenticationException e) {
+                        errorThrown = true;
+                    } finally {
+                        client.close();
+                    }
+                }
+            }
+        } finally {
+            client.close();
+        }
+        assertTrue(errorThrown); // An exception would have been thrown if authentication failed
     }
 }
