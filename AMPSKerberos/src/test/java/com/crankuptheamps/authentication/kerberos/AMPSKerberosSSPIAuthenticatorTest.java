@@ -22,6 +22,8 @@ public class AMPSKerberosSSPIAuthenticatorTest extends AMPSKerberosAuthenticator
         Assume.assumeTrue(props.getProperty("os.name").toLowerCase().startsWith("win"));
         Assume.assumeTrue(_authPlatform.equals("windows"));
 
+        String ampsUser = "Administrator";
+        _uri = "tcp://" + ampsUser + "@" + _ampsHost + ":" + _ampsPort + "/amps/json";
         _authenticator = new AMPSKerberosSSPIAuthenticator(_spn);
     }
 }

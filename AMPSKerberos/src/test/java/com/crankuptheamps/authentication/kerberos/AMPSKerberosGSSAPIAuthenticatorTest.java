@@ -49,6 +49,8 @@ public class AMPSKerberosGSSAPIAuthenticatorTest extends AMPSKerberosAuthenticat
                     + _loginContextName + "\"");
         }
 
+        String ampsUser = "60east";
+        _uri = "tcp://" + ampsUser + "@" + _ampsHost + ":" + _ampsPort + "/amps/json";
         _authenticator = new AMPSKerberosGSSAPIAuthenticator(_spn, _loginContextName);
     }
 }

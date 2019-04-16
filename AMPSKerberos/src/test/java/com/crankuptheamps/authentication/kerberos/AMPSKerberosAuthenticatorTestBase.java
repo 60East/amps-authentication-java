@@ -17,6 +17,8 @@ import com.crankuptheamps.client.exception.AMPSException;
 import com.crankuptheamps.client.exception.AuthenticationException;
 
 public abstract class AMPSKerberosAuthenticatorTestBase {
+    protected String _ampsHost;
+    protected String _ampsPort;
     protected String _uri;
     protected String _spn;
     protected String _authPlatform;
@@ -28,15 +30,15 @@ public abstract class AMPSKerberosAuthenticatorTestBase {
     public void setUp() throws AuthenticationException {
         Properties props = System.getProperties();
 
-        String ampsHost = props.getProperty("amps.auth.test.amps.host");
+        _ampsHost = props.getProperty("amps.auth.test.amps.host");
 
-        if (ampsHost == null) {
+        if (_ampsHost == null) {
             _logger.warn("Kerberos tests are being skipped. Set the amps.auth.test.amps.host property to enable them.");
         }
-        Assume.assumeTrue(ampsHost != null);
+        Assume.assumeTrue(_ampsHost != null);
 
-        String ampsPort = props.getProperty("amps.auth.test.amps.port");
-        if (ampsPort == null) {
+        _ampsPort = props.getProperty("amps.auth.test.amps.port");
+        if (_ampsPort == null) {
             throw new RuntimeException("amps.auth.test.amps.port must be set");
         }
 
@@ -49,8 +51,7 @@ public abstract class AMPSKerberosAuthenticatorTestBase {
             throw new RuntimeException("amps.auth.test.auth.platform must be 'linux' or 'windows'");
         }
 
-        _uri = "tcp://60east@" + ampsHost + ":" + ampsPort + "/amps/json";
-        _spn = "AMPS/" + ampsHost;
+        _spn = "AMPS/" + _ampsHost;
     }
 
     @Test
